@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Appointment</title>
+</head>
+<body>
+    <h2>Edit Appointment for {{ appt.patient.first_name }} {{ appt.patient.last_name }}</h2>
+    <form method="post">
+        <label>Date & Time:</label>
+        <input type="datetime-local" name="date_time" value="{{ appt.date_time.strftime('%Y-%m-%dT%H:%M') }}" required><br>
+        <label>Reason:</label>
+        <input type="text" name="reason" value="{{ appt.reason }}" required><br>
+        <label>Status:</label>
+        <select name="status">
+            <option value="scheduled" {% if appt.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+            <option value="completed" {% if appt.status == 'completed' %}selected{% endif %}>Completed</option>
+            <option value="cancelled" {% if appt.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        </select><br>
+        <button type="submit">Update</button>
+    </form>
+    <a href="{{ url_for('patients.list_appointments', patient_id=appt.patient_id) }}">Back to Appointments</a>
+</body>
+</html> 

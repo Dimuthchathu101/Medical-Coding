@@ -61,4 +61,33 @@ class Notification(db.Model):
     message = db.Column(db.String(256), nullable=False)
     is_read = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
-    user = db.relationship('User', backref=db.backref('notifications', lazy=True)) 
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+
+class Appointment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    date_time = db.Column(db.DateTime, nullable=False)
+    reason = db.Column(db.String(256))
+    status = db.Column(db.String(32), nullable=False, default='scheduled')
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    patient = db.relationship('Patient', backref=db.backref('appointments', lazy=True))
+    creator = db.relationship('User', backref=db.backref('created_appointments', lazy=True))
+
+class ICD10Code(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(16), unique=True, nullable=False)
+    description = db.Column(db.String(256), nullable=False)
+    category = db.Column(db.String(64))
+
+class CPTCode(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(16), unique=True, nullable=False)
+    description = db.Column(db.String(256), nullable=False)
+    category = db.Column(db.String(64))
+
+class ClaimCodeAssignment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    claim_id = db.Column(db.Integer, db.ForeignKey('claim.id'), nullable=False)
+    code_type = db.Column(db.String(8), nullable=False)  # 'ICD10' or 'CPT'
+    code_id = db.Column(db.Integer, nullable=False)
+    claim = db.relationship('Claim', backref=db.backref('code_assignments', lazy=True)) 

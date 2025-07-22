@@ -35,6 +35,14 @@
             }
         });
     </script>
+    <h3>Upcoming Appointments</h3>
+    <ul>
+        {% for appt in upcoming_appointments %}
+        <li>{{ appt.date_time }} - {{ appt.patient.first_name }} {{ appt.patient.last_name }}: {{ appt.reason }}</li>
+        {% else %}
+        <li>No upcoming appointments.</li>
+        {% endfor %}
+    </ul>
     <a href="{{ url_for('patients.list_patients') }}">Back to Dashboard</a>
 </body>
 </html> 

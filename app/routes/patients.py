@@ -8,6 +8,9 @@ from flask import send_from_directory, current_app
 from werkzeug.utils import secure_filename
 from app.models import PatientDocument
 from app.utils.compliance import log_audit
+from app.models import Appointment
+from datetime import datetime
+from app.models import Notification
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -130,3 +133,52 @@ def download_document(doc_id):
         return redirect(url_for('patients.view_patient', patient_id=patient.id))
     directory = os.path.dirname(doc.filepath)
     return send_from_directory(directory, doc.filename, as_attachment=True) 
+
+@patients_bp.route('/<int:patient_id>/appointments')
+@login_required
+def list_appointments(patient_id):
+    patient = Patient.query.get_or_404(patient_id)
+    appointments = Appointment.query.filter_by(patient_id=patient.id).order_by(Appointment.date_time.desc()).all()
+    return render_template('patients/appointments.html', patient=patient, appointments=appointments)
+
+@patients_bp.route('/<int:patient_id>/appointments/add', methods=['GET', 'POST'])
+@login_required
+def add_appointment(patient_id):
+    patient = Patient.query.get_or_404(patient_id)
+    if request.method == 'POST':
+        date_time_str = request.form['date_time']
+        reason = request.form['reason']
+        date_time = datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M')
+        appt = Appointment(patient_id=patient.id, date_time=date_time, reason=reason, created_by=current_user.id)
+        db.session.add(appt)
+        db.session.commit()
+        # Notify patient creator
+        message = f'New appointment scheduled for {patient.first_name} {patient.last_name} on {date_time.strftime("%Y-%m-%d %H:%M")}: {reason}'
+        notification = Notification(user_id=patient.created_by, message=message)
+        db.session.add(notification)
+        db.session.commit()
+        flash('Appointment scheduled successfully.')
+        return redirect(url_for('patients.list_appointments', patient_id=patient.id))
+    return render_template('patients/add_appointment.html', patient=patient)
+
+@patients_bp.route('/appointments/<int:appt_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_appointment(appt_id):
+    appt = Appointment.query.get_or_404(appt_id)
+    if request.method == 'POST':
+        appt.date_time = datetime.strptime(request.form['date_time'], '%Y-%m-%dT%H:%M')
+        appt.reason = request.form['reason']
+        appt.status = request.form['status']
+        db.session.commit()
+        flash('Appointment updated successfully.')
+        return redirect(url_for('patients.list_appointments', patient_id=appt.patient_id))
+    return render_template('patients/edit_appointment.html', appt=appt)
+
+@patients_bp.route('/appointments/<int:appt_id>/cancel', methods=['POST'])
+@login_required
+def cancel_appointment(appt_id):
+    appt = Appointment.query.get_or_404(appt_id)
+    appt.status = 'cancelled'
+    db.session.commit()
+    flash('Appointment cancelled.')
+    return redirect(url_for('patients.list_appointments', patient_id=appt.patient_id)) 

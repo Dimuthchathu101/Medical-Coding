@@ -22,6 +22,7 @@
     <a href="{{ url_for('patients.upload_document', patient_id=patient.id) }}">Upload Document</a>
     <a href="{{ url_for('patients.edit_patient', patient_id=patient.id) }}">Edit</a>
     <a href="{{ url_for('claims.list_claims', patient_id=patient.id) }}">View Claims</a>
+    <a href="{{ url_for('patients.list_appointments', patient_id=patient.id) }}">View Appointments</a>
     <form method="post" action="{{ url_for('patients.delete_patient', patient_id=patient.id) }}" style="display:inline;">
         <button type="submit">Delete</button>
     </form>
