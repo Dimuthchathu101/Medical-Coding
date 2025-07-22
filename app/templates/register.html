@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h2>Register</h2>
+    <form method="post">
+        <label>Username:</label><input type="text" name="username" required><br>
+        <label>Email:</label><input type="email" name="email" required><br>
+        <label>Password:</label><input type="password" name="password" required><br>
+        <label>Role:</label>
+        <select name="role">
+            <option value="coder">Coder</option>
+            <option value="biller">Biller</option>
+            <option value="admin">Admin</option>
+        </select><br>
+        <input type="submit" value="Register">
+    </form>
+    <a href="{{ url_for('auth.login') }}">Already have an account? Login</a>
+</body>
+</html> 

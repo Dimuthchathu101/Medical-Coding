@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Patient</title>
+</head>
+<body>
+    <h2>Add Patient</h2>
+    <form method="post">
+        <label>First Name:</label><input type="text" name="first_name" required><br>
+        <label>Last Name:</label><input type="text" name="last_name" required><br>
+        <label>Date of Birth:</label><input type="date" name="dob" required><br>
+        <label>Insurance:</label><input type="text" name="insurance"><br>
+        <input type="submit" value="Add Patient">
+    </form>
+    <a href="{{ url_for('patients.list_patients') }}">Back to Patients</a>
+</body>
+</html> 

@@ -7,3 +7,12 @@ class Config:
     SESSION_COOKIE_SECURE = True
     REMEMBER_COOKIE_SECURE = True
     # Add more security and compliance settings as needed 
+
+class DevelopmentConfig(Config):
+    SESSION_COOKIE_SECURE = False
+    REMEMBER_COOKIE_SECURE = False
+
+# Select config based on environment
+config = Config
+if os.environ.get('FLASK_ENV') == 'development':
+    config = DevelopmentConfig 

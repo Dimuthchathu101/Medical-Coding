@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patients</title>
+</head>
+<body>
+    <h2>My Patients</h2>
+    <a href="{{ url_for('patients.add_patient') }}">Add Patient</a>
+    <ul>
+        {% for patient in patients %}
+        <li><a href="{{ url_for('patients.view_patient', patient_id=patient.id) }}">{{ patient.first_name }} {{ patient.last_name }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+</body>
+</html> 
