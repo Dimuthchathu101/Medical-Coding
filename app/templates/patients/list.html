@@ -6,9 +6,24 @@
 <body>
     <h2>My Patients</h2>
     <a href="{{ url_for('patients.add_patient') }}">Add Patient</a>
+    <form method="get" action="{{ url_for('patients.list_patients') }}">
+        <input type="text" name="search" placeholder="Search by name" value="{{ search }}">
+        <select name="sort">
+            <option value="last_name" {% if sort == 'last_name' %}selected{% endif %}>Last Name</option>
+            <option value="first_name" {% if sort == 'first_name' %}selected{% endif %}>First Name</option>
+            <option value="dob" {% if sort == 'dob' %}selected{% endif %}>Date of Birth</option>
+        </select>
+        <select name="order">
+            <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascending</option>
+            <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descending</option>
+        </select>
+        <button type="submit">Apply</button>
+    </form>
     <ul>
         {% for patient in patients %}
-        <li><a href="{{ url_for('patients.view_patient', patient_id=patient.id) }}">{{ patient.first_name }} {{ patient.last_name }}</a></li>
+        <li><a href="{{ url_for('patients.view_patient', patient_id=patient.id) }}">{{ patient.first_name }} {{ patient.last_name }} (DOB: {{ patient.dob }})</a></li>
+        {% else %}
+        <li>No patients found.</li>
         {% endfor %}
     </ul>
     <a href="{{ url_for('auth.logout') }}">Logout</a>

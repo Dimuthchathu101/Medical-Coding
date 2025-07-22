@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications</title>
+</head>
+<body>
+    <h2>Notifications</h2>
+    <ul>
+        {% for note in notifications %}
+        <li>{{ note.message }} <small>({{ note.timestamp }})</small></li>
+        {% else %}
+        <li>No notifications.</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('patients.list_patients') }}">Back to Dashboard</a>
+</body>
+</html> 

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Claims for {{ patient.first_name }} {{ patient.last_name }}</title>
+</head>
+<body>
+    <h2>Claims for {{ patient.first_name }} {{ patient.last_name }}</h2>
+    <a href="{{ url_for('claims.add_claim', patient_id=patient.id) }}">Add Claim</a>
+    <ul>
+        {% for claim in claims %}
+        <li>
+            Amount: ${{ '%.2f' % claim.amount }}, Status: {{ claim.status }}
+            (<a href="{{ url_for('claims.edit_claim', claim_id=claim.id) }}">Edit</a>)
+            (<a href="{{ url_for('claims.download_invoice', claim_id=claim.id) }}">Download Invoice (PDF)</a>)
+        </li>
+        {% else %}
+        <li>No claims found.</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('patients.view_patient', patient_id=patient.id) }}">Back to Patient</a>
+</body>
+</html> 

@@ -14,7 +14,13 @@ principals = Principal()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(os.environ.get('APP_SETTINGS', 'config.Config'))
+    # Use DevelopmentConfig in development, otherwise default Config
+    if os.environ.get('FLASK_ENV') == 'development':
+        from config import DevelopmentConfig
+        app.config.from_object(DevelopmentConfig)
+    else:
+        from config import Config
+        app.config.from_object(Config)
 
     # Security headers
     if not app.debug and not app.testing:

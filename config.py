@@ -11,6 +11,7 @@ class Config:
 class DevelopmentConfig(Config):
     SESSION_COOKIE_SECURE = False
     REMEMBER_COOKIE_SECURE = False
+    DEBUG = True
 
 # Select config based on environment
 config = Config

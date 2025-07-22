@@ -27,4 +27,38 @@ class Patient(db.Model):
     dob = db.Column(db.Date, nullable=False)
     insurance = db.Column(db.String(128))
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now()) 
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+class PatientDocument(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(256), nullable=False)
+    filepath = db.Column(db.String(512), nullable=False)
+    uploaded_at = db.Column(db.DateTime, server_default=db.func.now())
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    patient = db.relationship('Patient', backref=db.backref('documents', lazy=True))
+
+class Claim(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+    status = db.Column(db.String(32), nullable=False, default='pending')
+    amount = db.Column(db.Float, nullable=False, default=0.0)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    patient = db.relationship('Patient', backref=db.backref('claims', lazy=True))
+
+class AuditLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    action = db.Column(db.String(64), nullable=False)
+    target_type = db.Column(db.String(64), nullable=False)
+    target_id = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    details = db.Column(db.Text)
+    user = db.relationship('User', backref=db.backref('audit_logs', lazy=True))
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.String(256), nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True)) 

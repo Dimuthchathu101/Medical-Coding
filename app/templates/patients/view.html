@@ -8,7 +8,20 @@
     <p><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }}</p>
     <p><strong>Date of Birth:</strong> {{ patient.dob }}</p>
     <p><strong>Insurance:</strong> {{ patient.insurance }}</p>
+    <h3>Documents</h3>
+    <ul>
+        {% for doc in patient.documents %}
+        <li>
+            {{ doc.filename }}
+            (<a href="{{ url_for('patients.download_document', doc_id=doc.id) }}">Download</a>)
+        </li>
+        {% else %}
+        <li>No documents uploaded.</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('patients.upload_document', patient_id=patient.id) }}">Upload Document</a>
     <a href="{{ url_for('patients.edit_patient', patient_id=patient.id) }}">Edit</a>
+    <a href="{{ url_for('claims.list_claims', patient_id=patient.id) }}">View Claims</a>
     <form method="post" action="{{ url_for('patients.delete_patient', patient_id=patient.id) }}" style="display:inline;">
         <button type="submit">Delete</button>
     </form>

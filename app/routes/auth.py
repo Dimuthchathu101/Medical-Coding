@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import User, db
+from app.models import User, db, Notification
 from werkzeug.security import generate_password_hash, check_password_hash
 
 auth_bp = Blueprint('auth', __name__)
@@ -45,3 +45,13 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('auth.login')) 
+
+@auth_bp.route('/notifications')
+@login_required
+def notifications():
+    notes = Notification.query.filter_by(user_id=current_user.id).order_by(Notification.timestamp.desc()).all()
+    for note in notes:
+        if not note.is_read:
+            note.is_read = True
+    db.session.commit()
+    return render_template('notifications.html', notifications=notes) 
