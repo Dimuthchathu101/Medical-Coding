@@ -1,48 +1,82 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Billing Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <h2>Billing & Claims Dashboard</h2>
-    <p><strong>Total Claims:</strong> {{ total_claims }}</p>
-    <p><strong>Total Billed:</strong> ${{ '%.2f' % total_billed }}</p>
-    <p><strong>Total Paid:</strong> ${{ '%.2f' % total_paid }}</p>
-    <h3>Claims by Status</h3>
-    <canvas id="statusChart" width="400" height="200"></canvas>
-    <script>
-        const ctx = document.getElementById('statusChart').getContext('2d');
-        const statusData = {
-            labels: {{ status_counts|map(attribute=0)|list|tojson }},
-            datasets: [{
-                label: 'Claims by Status',
-                data: {{ status_counts|map(attribute=1)|list|tojson }},
-                backgroundColor: [
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(75, 192, 192, 0.6)'
-                ]
-            }]
-        };
-        new Chart(ctx, {
-            type: 'bar',
-            data: statusData,
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } }
-            }
-        });
-    </script>
-    <h3>Upcoming Appointments</h3>
-    <ul>
-        {% for appt in upcoming_appointments %}
-        <li>{{ appt.date_time }} - {{ appt.patient.first_name }} {{ appt.patient.last_name }}: {{ appt.reason }}</li>
-        {% else %}
-        <li>No upcoming appointments.</li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('patients.list_patients') }}">Back to Dashboard</a>
-</body>
-</html> 
+{% extends 'base.html' %}
+{% block title %}Billing Dashboard{% endblock %}
+{% block content %}
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card text-bg-primary mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Claims</h5>
+        <p class="card-text display-6">{{ total_claims }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-bg-success mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Billed</h5>
+        <p class="card-text display-6">${{ '%.2f' % total_billed }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-bg-info mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Paid</h5>
+        <p class="card-text display-6">${{ '%.2f' % total_paid }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row mb-4">
+  <div class="col-md-7">
+    <div class="card mb-3">
+      <div class="card-header">Claims by Status</div>
+      <div class="card-body">
+        <canvas id="statusChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card mb-3">
+      <div class="card-header">Upcoming Appointments</div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for appt in upcoming_appointments %}
+          <li class="list-group-item">
+            <strong>{{ appt.date_time }}</strong><br>
+            {{ appt.patient.first_name }} {{ appt.patient.last_name }}: {{ appt.reason }}
+          </li>
+          {% else %}
+          <li class="list-group-item">No upcoming appointments.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    const statusData = {
+        labels: {{ status_counts|map(attribute=0)|list|tojson }},
+        datasets: [{
+            label: 'Claims by Status',
+            data: {{ status_counts|map(attribute=1)|list|tojson }},
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(75, 192, 192, 0.6)'
+            ]
+        }]
+    };
+    new Chart(ctx, {
+        type: 'bar',
+        data: statusData,
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+{% endblock %} 

@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Notifications</title>
-</head>
-<body>
-    <h2>Notifications</h2>
-    <ul>
-        {% for note in notifications %}
-        <li>{{ note.message }} <small>({{ note.timestamp }})</small></li>
-        {% else %}
-        <li>No notifications.</li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('patients.list_patients') }}">Back to Dashboard</a>
-</body>
-</html> 
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<h2>Notifications</h2>
+<ul class="list-group mb-3">
+    {% for note in notifications %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ note.message }}
+        <span class="badge bg-light text-muted">{{ note.timestamp }}</span>
+    </li>
+    {% else %}
+    <li class="list-group-item">No notifications.</li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('patients.list_patients') }}" class="btn btn-link">Back to Dashboard</a>
+{% endblock %} 

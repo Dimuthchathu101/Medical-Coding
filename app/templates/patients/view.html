@@ -1,31 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>View Patient</title>
-</head>
-<body>
-    <h2>Patient Details</h2>
-    <p><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }}</p>
-    <p><strong>Date of Birth:</strong> {{ patient.dob }}</p>
-    <p><strong>Insurance:</strong> {{ patient.insurance }}</p>
-    <h3>Documents</h3>
-    <ul>
-        {% for doc in patient.documents %}
-        <li>
+{% extends 'base.html' %}
+{% block title %}Patient Details{% endblock %}
+{% block content %}
+<div class="row mb-4">
+  <div class="col-md-8">
+    <div class="card mb-3">
+      <div class="card-header bg-info text-white">Patient Details</div>
+      <div class="card-body">
+        <p><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }}</p>
+        <p><strong>Date of Birth:</strong> {{ patient.dob }}</p>
+        <p><strong>Insurance:</strong> {{ patient.insurance }}</p>
+        <div class="mb-2">
+          <a href="{{ url_for('patients.edit_patient', patient_id=patient.id) }}" class="btn btn-warning btn-sm">Edit</a>
+          <a href="{{ url_for('claims.list_claims', patient_id=patient.id) }}" class="btn btn-primary btn-sm">View Claims</a>
+          <a href="{{ url_for('patients.list_appointments', patient_id=patient.id) }}" class="btn btn-secondary btn-sm">View Appointments</a>
+        </div>
+        <form method="post" action="{{ url_for('patients.delete_patient', patient_id=patient.id) }}" style="display:inline;">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this patient?');">Delete</button>
+        </form>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-secondary text-white">Documents</div>
+      <div class="card-body">
+        <a href="{{ url_for('patients.upload_document', patient_id=patient.id) }}" class="btn btn-success btn-sm mb-2">Upload Document</a>
+        {% if patient.documents %}
+        <ul class="list-group">
+          {% for doc in patient.documents %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
             {{ doc.filename }}
-            (<a href="{{ url_for('patients.download_document', doc_id=doc.id) }}">Download</a>)
-        </li>
+            <a href="{{ url_for('patients.download_document', doc_id=doc.id) }}" class="btn btn-outline-primary btn-sm">Download</a>
+          </li>
+          {% endfor %}
+        </ul>
         {% else %}
-        <li>No documents uploaded.</li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('patients.upload_document', patient_id=patient.id) }}">Upload Document</a>
-    <a href="{{ url_for('patients.edit_patient', patient_id=patient.id) }}">Edit</a>
-    <a href="{{ url_for('claims.list_claims', patient_id=patient.id) }}">View Claims</a>
-    <a href="{{ url_for('patients.list_appointments', patient_id=patient.id) }}">View Appointments</a>
-    <form method="post" action="{{ url_for('patients.delete_patient', patient_id=patient.id) }}" style="display:inline;">
-        <button type="submit">Delete</button>
-    </form>
-    <a href="{{ url_for('patients.list_patients') }}">Back to Patients</a>
-</body>
-</html> 
+        <div class="alert alert-light mb-0">No documents uploaded.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<a href="{{ url_for('patients.list_patients') }}" class="btn btn-link">Back to Patients</a>
+{% endblock %} 

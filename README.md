@@ -41,3 +41,38 @@ A secure, modular, and extensible medical coding and billing platform built with
 - Implement additional modules (claims, payment posting, analytics)
 - Integrate with EHR/clearinghouse APIs
 - Expand test coverage
+
+## API & Web Endpoints
+
+### Authentication & User
+- `/auth/register` (GET, POST): Register a new user
+- `/auth/login` (GET, POST): User login
+- `/auth/logout` (GET): Logout
+- `/auth/notifications` (GET): View user notifications
+
+### Patients
+- `/patients/` (GET): List/search/sort patients
+- `/patients/add` (GET, POST): Add patient (admin/coder)
+- `/patients/<patient_id>` (GET): View patient details
+- `/patients/<patient_id>/edit` (GET, POST): Edit patient (admin/coder)
+- `/patients/<patient_id>/delete` (POST): Delete patient (admin/coder)
+- `/patients/<patient_id>/upload` (GET, POST): Upload patient document
+- `/patients/documents/<doc_id>/download` (GET): Download patient document
+- `/patients/<patient_id>/appointments` (GET): List appointments for patient
+- `/patients/<patient_id>/appointments/add` (GET, POST): Schedule appointment
+- `/patients/appointments/<appt_id>/edit` (GET, POST): Edit appointment
+- `/patients/appointments/<appt_id>/cancel` (POST): Cancel appointment
+
+### Claims & Billing
+- `/claims/patient/<patient_id>/claims` (GET): List claims for patient
+- `/claims/patient/<patient_id>/claims/add` (GET, POST): Add claim (admin/biller)
+- `/claims/claims/<claim_id>/edit` (GET, POST): Edit claim (admin/biller)
+- `/claims/claims/<claim_id>/invoice` (GET): Download claim invoice (PDF)
+- `/billing/dashboard` (GET): Billing & claims analytics dashboard
+
+### Coding (AJAX)
+- `/coding/search/icd10?q=...` (GET): Search ICD-10 codes
+- `/coding/search/cpt?q=...` (GET): Search CPT codes
+
+### Home
+- `/` (GET): Redirects to dashboard or login
