@@ -11,7 +11,9 @@
         <li>
             Amount: ${{ '%.2f' % claim.amount }}, Status: {{ claim.status }}
             (<a href="{{ url_for('claims.edit_claim', claim_id=claim.id) }}">Edit</a>)
-            (<a href="{{ url_for('claims.download_invoice', claim_id=claim.id) }}">Download Invoice (PDF)</a>)
+            (<a href="{{ url_for('claims.download_invoice', claim_id=claim.id) }}">Download Invoice (PDF)</a>)<br>
+            ICD-10: {% for a in claim.code_assignments if a.code_type == 'ICD10' %}{{ icd10_codes[a.code_id].code }}{% if not loop.last %}, {% endif %}{% else %}None{% endfor %}<br>
+            CPT: {% for a in claim.code_assignments if a.code_type == 'CPT' %}{{ cpt_codes[a.code_id].code }}{% if not loop.last %}, {% endif %}{% else %}None{% endfor %}
         </li>
         {% else %}
         <li>No claims found.</li>

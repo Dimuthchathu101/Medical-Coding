@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import Claim, Patient, db, Notification
+from app.models import Claim, Patient, db, Notification, ICD10Code, CPTCode
 from app.utils.security import roles_required
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -15,7 +15,9 @@ claims_bp = Blueprint('claims', __name__)
 def list_claims(patient_id):
     patient = Patient.query.get_or_404(patient_id)
     claims = Claim.query.filter_by(patient_id=patient.id).all()
-    return render_template('claims/list.html', patient=patient, claims=claims)
+    icd10_codes = {c.id: c for c in ICD10Code.query.all()}
+    cpt_codes = {c.id: c for c in CPTCode.query.all()}
+    return render_template('claims/list.html', patient=patient, claims=claims, icd10_codes=icd10_codes, cpt_codes=cpt_codes)
 
 @claims_bp.route('/patient/<int:patient_id>/claims/add', methods=['GET', 'POST'])
 @login_required

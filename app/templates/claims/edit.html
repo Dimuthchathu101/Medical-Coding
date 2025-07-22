@@ -2,6 +2,9 @@
 <html>
 <head>
     <title>Edit Claim</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
     <h2>Edit Claim for {{ claim.patient.first_name }} {{ claim.patient.last_name }}</h2>
@@ -14,8 +17,83 @@
             <option value="denied" {% if claim.status == 'denied' %}selected{% endif %}>Denied</option>
             <option value="paid" {% if claim.status == 'paid' %}selected{% endif %}>Paid</option>
         </select><br>
+        <label>ICD-10 Codes:</label>
+        <select id="icd10-codes" name="icd10_codes" multiple="multiple" style="width: 50%"></select><br>
+        <label>CPT Codes:</label>
+        <select id="cpt-codes" name="cpt_codes" multiple="multiple" style="width: 50%"></select><br>
         <button type="submit">Update Claim</button>
     </form>
     <a href="{{ url_for('claims.list_claims', patient_id=claim.patient_id) }}">Back to Claims</a>
+<script>
+$(document).ready(function() {
+    function formatCode(item) {
+        if (item.loading) return item.text;
+        return item.text;
+    }
+    function getSelectedICD10() {
+        return [
+            {% for code in icd10_codes if code.id in assigned_icd10 %}
+            {id: {{ code.id }}, text: "{{ code.code }} - {{ code.description }}"},
+            {% endfor %}
+        ];
+    }
+    function getSelectedCPT() {
+        return [
+            {% for code in cpt_codes if code.id in assigned_cpt %}
+            {id: {{ code.id }}, text: "{{ code.code }} - {{ code.description }}"},
+            {% endfor %}
+        ];
+    }
+    $('#icd10-codes').select2({
+        ajax: {
+            url: '/coding/search/icd10',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) { return { q: params.term }; },
+            processResults: function(data) {
+                return { results: data.map(function(item) {
+                    return { id: item.id, text: item.code + ' - ' + item.description };
+                }) };
+            },
+            cache: true
+        },
+        placeholder: 'Search ICD-10 codes',
+        minimumInputLength: 2,
+        templateResult: formatCode,
+        templateSelection: formatCode
+    });
+    $('#cpt-codes').select2({
+        ajax: {
+            url: '/coding/search/cpt',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) { return { q: params.term }; },
+            processResults: function(data) {
+                return { results: data.map(function(item) {
+                    return { id: item.id, text: item.code + ' - ' + item.description };
+                }) };
+            },
+            cache: true
+        },
+        placeholder: 'Search CPT codes',
+        minimumInputLength: 2,
+        templateResult: formatCode,
+        templateSelection: formatCode
+    });
+    // Pre-select assigned codes
+    $('#icd10-codes').empty();
+    var selectedICD10 = getSelectedICD10();
+    for (var i = 0; i < selectedICD10.length; i++) {
+        var option = new Option(selectedICD10[i].text, selectedICD10[i].id, true, true);
+        $('#icd10-codes').append(option).trigger('change');
+    }
+    $('#cpt-codes').empty();
+    var selectedCPT = getSelectedCPT();
+    for (var i = 0; i < selectedCPT.length; i++) {
+        var option = new Option(selectedCPT[i].text, selectedCPT[i].id, true, true);
+        $('#cpt-codes').append(option).trigger('change');
+    }
+});
+</script>
 </body>
 </html> 

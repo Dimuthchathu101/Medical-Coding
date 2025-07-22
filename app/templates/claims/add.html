@@ -2,6 +2,9 @@
 <html>
 <head>
     <title>Add Claim</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
     <h2>Add Claim for {{ patient.first_name }} {{ patient.last_name }}</h2>
@@ -14,8 +17,48 @@
             <option value="denied">Denied</option>
             <option value="paid">Paid</option>
         </select><br>
+        <label>ICD-10 Codes:</label>
+        <select id="icd10-codes" name="icd10_codes" multiple="multiple" style="width: 50%"></select><br>
+        <label>CPT Codes:</label>
+        <select id="cpt-codes" name="cpt_codes" multiple="multiple" style="width: 50%"></select><br>
         <button type="submit">Add Claim</button>
     </form>
     <a href="{{ url_for('claims.list_claims', patient_id=patient.id) }}">Back to Claims</a>
+<script>
+$(document).ready(function() {
+    $('#icd10-codes').select2({
+        ajax: {
+            url: '/coding/search/icd10',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) { return { q: params.term }; },
+            processResults: function(data) {
+                return { results: data.map(function(item) {
+                    return { id: item.id, text: item.code + ' - ' + item.description };
+                }) };
+            },
+            cache: true
+        },
+        placeholder: 'Search ICD-10 codes',
+        minimumInputLength: 2
+    });
+    $('#cpt-codes').select2({
+        ajax: {
+            url: '/coding/search/cpt',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) { return { q: params.term }; },
+            processResults: function(data) {
+                return { results: data.map(function(item) {
+                    return { id: item.id, text: item.code + ' - ' + item.description };
+                }) };
+            },
+            cache: true
+        },
+        placeholder: 'Search CPT codes',
+        minimumInputLength: 2
+    });
+});
+</script>
 </body>
 </html> 

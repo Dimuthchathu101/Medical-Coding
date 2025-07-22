@@ -37,6 +37,8 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix='/auth')
     from .routes.patients import patients_bp
     app.register_blueprint(patients_bp, url_prefix='/patients')
+    from .routes.coding import coding_bp
+    app.register_blueprint(coding_bp, url_prefix='/coding')
 
     # Automatically create a default admin user if not exists
     with app.app_context():
